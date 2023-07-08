@@ -8,15 +8,24 @@ from tkinter import messagebox
 pygame.init()
 
 infoObject = pygame.display.Info()
-WIDTH, HEIGHT = infoObject.current_w-10, infoObject.current_h-10
+WIDTH, HEIGHT = infoObject.current_w - 10, infoObject.current_h - 10
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))  # create the window
 pygame.display.set_caption("Sea Clean")  # the game title
 BG = pygame.transform.scale(pygame.image.load("images/Sea.png"), (WIDTH, HEIGHT))
-TRASH = ["images/Bottle.png",
-         "images/can.png", "images/Banana.png", "images/Paper.png", "images/Bamba.png"]
-TURTLES = ["images/GrayT.png", "images/YellowT.png",
-           "images/BrownT.png", "images/BlueT.png",
-           "images/PurpleT.png"]
+TRASH = [
+    "images/Bottle.png",
+    "images/can.png",
+    "images/Banana.png",
+    "images/Paper.png",
+    "images/Bamba.png"
+]
+TURTLES = [
+    "images/GrayT.png",
+    "images/YellowT.png",
+    "images/BrownT.png",
+    "images/BlueT.png",
+    "images/PurpleT.png"
+]
 TRASHOBJ = []
 # Set a variable to store the current movable image object
 moving_obj = None
@@ -41,7 +50,10 @@ class TrashObj:
         self.vel = 10
         # Draw rectangle around the image
         self.rect = self.img.get_rect()
-        self.rect.center = random.randint(self.vel, WIDTH - self.vel), random.randint(self.vel, HEIGHT - self.vel)
+        self.rect.center = (
+            random.randint(self.vel, WIDTH - self.vel),
+            random.randint(self.vel, HEIGHT - self.vel),
+        )
         self.img_path = img_path
 
     def get_path(self):
@@ -55,7 +67,10 @@ class TurtleObj:
         self.vel = 100
         # Draw rectangle around the image
         self.rect = self.img.get_rect()
-        self.rect.center = random.randint(self.vel, WIDTH - self.vel), random.randint(self.vel, HEIGHT - self.vel)
+        self.rect.center = (
+            random.randint(self.vel, WIDTH - self.vel),
+            random.randint(self.vel, HEIGHT - self.vel),
+        )
 
 
 def lose_window():
@@ -64,7 +79,10 @@ def lose_window():
     while cap.isOpened():
         ret, frame = cap.read()
         if ret:
-            cv2.imshow('frame', frame)
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            frame = pygame.surfarray.make_surface(frame)
+            WIN.blit(frame, (0, 0))
+
             if cv2.waitKey(25) & 0xFF == ord('q'):
                 break
         else:
@@ -81,7 +99,10 @@ def wining_window():
         time.sleep(0.1)
         ret, frame = cap.read()
         if ret:
-            cv2.imshow('frame', frame)
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            frame = pygame.surfarray.make_surface(frame)
+            WIN.blit(frame, (WIDTH / 2 - 70, 500))
+
             if cv2.waitKey(FPS) & 0xFF == ord('q'):
                 break
         else:
@@ -96,9 +117,20 @@ def opening():
 
     while cap.isOpened():
         ret, frame = cap.read()
+
+        frame = cv2.flip(frame, 0)
+        frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+
+        if pygame.event.get() == pygame.QUIT:
+            pygame.quit()
+
         if ret:
-            cv2.imshow('frame', frame)
-            if cv2.waitKey(25) & 0xFF == ord('q'):
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            frame = pygame.surfarray.make_surface(frame)
+            WIN.blit(frame, (WIDTH / 2 - frame.get_width() / 2, HEIGHT / 2 - frame.get_height() / 2))
+            pygame.display.update()
+
+            if cv2.waitKey(1) == 27:
                 break
         else:
             break
@@ -112,9 +144,20 @@ def backstory_introduction():
 
     while cap.isOpened():
         ret, frame = cap.read()
+
+        frame = cv2.flip(frame, 0)
+        frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+
+        if pygame.event.get() == pygame.QUIT:
+            pygame.quit()
+
         if ret:
-            cv2.imshow('frame', frame)
-            if cv2.waitKey(25) & 0xFF == ord('q'):
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            frame = pygame.surfarray.make_surface(frame)
+            WIN.blit(frame, (WIDTH / 2 - frame.get_width() / 2, HEIGHT / 2 - frame.get_height() / 2))
+            pygame.display.update()
+
+            if cv2.waitKey(1) == 27:
                 break
         else:
             break
@@ -148,8 +191,10 @@ def welcome_window():
 
                 # checks if mouse position is over the button
 
-                if (button_pos[0] < mouse_pos[0] < button_pos[0] + button_size[0]) and (
-                        button_pos[1] < mouse_pos[1] < button_pos[1] + button_size[1]):
+                if (
+                    button_pos[0] < mouse_pos[0] < button_pos[0] + button_size[0]
+                ) and (button_pos[1] < mouse_pos[1] < button_pos[1] + button_size[1]):
+                    run = False
                     main()
             # start the main game
 
@@ -190,12 +235,12 @@ def check_collision():
             TRASHOBJ.remove(trash_obj)
         elif metal_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/can.png":
             TRASHOBJ.remove(trash_obj)
-'''        elif glass_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/Bottle.png":
+        elif glass_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/Bottle.png":
             TRASHOBJ.remove(trash_obj)
         elif plastic_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/Bamba.png":
             TRASHOBJ.remove(trash_obj)
         elif paper_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/Paper.png":
-            TRASHOBJ.remove(trash_obj)'''
+            TRASHOBJ.remove(trash_obj)
 
 
 def main():
@@ -248,7 +293,7 @@ def main():
         check_collision()
 
         # Check for mouse events on the current movable object
-        for event in pygame.event.get():  # a loop that runs threw all the events on pygame
+        for event in pygame.event.get():  # a loop that runs through all the events on pygame
 
             # Close if the user quits the game
             if event.type == pygame.QUIT:
@@ -263,7 +308,6 @@ def main():
 
             elif event.type == pygame.MOUSEBUTTONUP and moving_obj is not None and moving_obj.rect.collidepoint(
                     event.pos):
-
                 moving_obj = None
 
             # Make your image move continuously
@@ -273,9 +317,9 @@ def main():
         draw(BG, img_obj, elapsed_time)
         draw_t(organic_t)
         draw_t(metal_t)
-        '''draw_t(glass_t)
+        draw_t(glass_t)
         draw_t(plastic_t)
-        draw_t(paper_t)'''
+        draw_t(paper_t)
 
         pygame.display.update()  # Update the GUI pygame
         clock.tick(FPS)  # set FPS
