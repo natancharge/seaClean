@@ -78,12 +78,20 @@ def lose_window():
 
     while cap.isOpened():
         ret, frame = cap.read()
+
+        frame = cv2.flip(frame, 0)
+        frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+
+        if pygame.event.get() == pygame.QUIT:
+            pygame.quit()
+
         if ret:
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             frame = pygame.surfarray.make_surface(frame)
-            WIN.blit(frame, (0, 0))
+            WIN.blit(frame, (WIDTH / 2 - frame.get_width() / 2, HEIGHT / 2 - frame.get_height() / 2))
+            pygame.display.update()
 
-            if cv2.waitKey(25) & 0xFF == ord('q'):
+            if cv2.waitKey(1) == 27:
                 break
         else:
             break
@@ -96,14 +104,21 @@ def wining_window():
     cap = cv2.VideoCapture('vids/win.mov')  # שם של קובץ
 
     while cap.isOpened():
-        time.sleep(0.1)
         ret, frame = cap.read()
+
+        frame = cv2.flip(frame, 0)
+        frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+
+        if pygame.event.get() == pygame.QUIT:
+            pygame.quit()
+
         if ret:
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             frame = pygame.surfarray.make_surface(frame)
-            WIN.blit(frame, (WIDTH / 2 - 70, 500))
+            WIN.blit(frame, (WIDTH / 2 - frame.get_width() / 2, HEIGHT / 2 - frame.get_height() / 2))
+            pygame.display.update()
 
-            if cv2.waitKey(FPS) & 0xFF == ord('q'):
+            if cv2.waitKey(1) == 27:
                 break
         else:
             break
