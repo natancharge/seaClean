@@ -8,7 +8,7 @@ from tkinter import messagebox
 pygame.init()
 
 infoObject = pygame.display.Info()
-WIDTH, HEIGHT = infoObject.current_w, infoObject.current_h
+WIDTH, HEIGHT = infoObject.current_w-10, infoObject.current_h-10
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))  # create the window
 pygame.display.set_caption("Sea Clean")  # the game title
 BG = pygame.transform.scale(pygame.image.load("images/Sea.png"), (WIDTH, HEIGHT))
@@ -75,24 +75,20 @@ def lose_window():
 
 
 def wining_window():
-    # cap = cv2.VideoCapture('vids/win.mov')  # שם של קובץ
+    cap = cv2.VideoCapture('vids/win.mov')  # שם של קובץ
 
-    # while cap.isOpened():
-    #     time.sleep(0.1)
-    #     ret, frame = cap.read()
-    #     if ret:
-    #         cv2.imshow('frame', frame)
-    #         if cv2.waitKey(FPS) & 0xFF == ord('q'):
-    #             break
-    #     else:
-    #         break
+    while cap.isOpened():
+        time.sleep(0.1)
+        ret, frame = cap.read()
+        if ret:
+            cv2.imshow('frame', frame)
+            if cv2.waitKey(FPS) & 0xFF == ord('q'):
+                break
+        else:
+            break
 
-    # cap.release()
-    # cv2.destroyAllWindows()
-
-    movie = pygame.movie('vids/win.mov')
-    movie.Movie.set_display(WIN)
-    movie.Movie.play()
+    cap.release()
+    cv2.destroyAllWindows()
 
 
 def opening():
@@ -135,7 +131,7 @@ def welcome_window():
     surface.set_alpha(128)  # alpha level
     surface.fill((255, 255, 255))  # this fills the entire surface
     startmenu = pygame.image.load('images/start (2).png')
-    startmenu = pygame.transform.scale(startmenu, (867, 606))
+    startmenu = pygame.transform.scale(startmenu, (WIDTH, HEIGHT))
     run = True
     while run:
         pygame.time.delay(10)
@@ -166,11 +162,11 @@ def draw_turtle(img):
     return TurtleObj(img)
 
 
-glass_t = draw_turtle('images/PurpleT.png')
-metal_t = draw_turtle('images/GrayT.png')
 organic_t = draw_turtle('images/BrownT.png')
+metal_t = draw_turtle('images/GrayT.png')
 paper_t = draw_turtle('images/BlueT.png')
 plastic_t = draw_turtle('images/YellowT.png')
+glass_t = draw_turtle('images/PurpleT.png')
 
 
 def draw(BG, img_obj, elapsed_time):
