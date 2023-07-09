@@ -31,7 +31,7 @@ TRASHOBJ, TURTLEOBJ = [], []
 moving_obj = None
 FPS = 15
 FONT = pygame.font.SysFont("comicsans", 30)
-lvl = 1
+lvl = 1  # a var for tracking the number of objects on the screen
 
 
 def play_music():
