@@ -13,24 +13,25 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))  # create the window
 pygame.display.set_caption("Sea Clean")  # the game title
 BG = pygame.transform.scale(pygame.image.load("images/Sea.png"), (WIDTH, HEIGHT))
 TRASH = [
-    "images/Bottle.png",
     "images/can.png",
     "images/Banana.png",
+    "images/Bottle.png",
     "images/Paper.png",
     "images/Bamba.png"
 ]
 TURTLES = [
     "images/GrayT.png",
-    "images/YellowT.png",
     "images/BrownT.png",
+    "images/PurpleT.png",
     "images/BlueT.png",
-    "images/PurpleT.png"
+    "images/YellowT.png"
 ]
-TRASHOBJ = []
+TRASHOBJ, TURTLEOBJ = [], []
 # Set a variable to store the current movable image object
 moving_obj = None
 FPS = 15
 FONT = pygame.font.SysFont("comicsans", 30)
+lvl = 1
 
 
 def play_music():
@@ -100,7 +101,7 @@ def lose_window():
     cv2.destroyAllWindows()
 
 
-def wining_window():
+def winning_window():
     cap = cv2.VideoCapture('vids/win.mov')  # שם של קובץ
 
     while cap.isOpened():
@@ -222,11 +223,12 @@ def draw_turtle(img):
     return TurtleObj(img)
 
 
-organic_t = draw_turtle('images/BrownT.png')
 metal_t = draw_turtle('images/GrayT.png')
+organic_t = draw_turtle('images/BrownT.png')
+glass_t = draw_turtle('images/PurpleT.png')
 paper_t = draw_turtle('images/BlueT.png')
 plastic_t = draw_turtle('images/YellowT.png')
-glass_t = draw_turtle('images/PurpleT.png')
+TURTLEOBJ = [metal_t, organic_t, glass_t, paper_t, plastic_t]
 
 
 def draw(BG, img_obj, elapsed_time):
@@ -246,23 +248,23 @@ def check_collision():
     global TRASHOBJ
     # Check if any trash object has collided with the turtle
     for trash_obj in TRASHOBJ:
-        if organic_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/Banana.png":
+        if metal_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/can.png":
             TRASHOBJ.remove(trash_obj)
-        elif metal_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/can.png":
+        elif organic_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/Banana.png":
             TRASHOBJ.remove(trash_obj)
         elif glass_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/Bottle.png":
             TRASHOBJ.remove(trash_obj)
-        elif plastic_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/Bamba.png":
-            TRASHOBJ.remove(trash_obj)
         elif paper_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/Paper.png":
+            TRASHOBJ.remove(trash_obj)
+        elif plastic_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/Bamba.png":
             TRASHOBJ.remove(trash_obj)
 
 
 def main():
-    global moving_obj
+    global moving_obj, lvl
 
-    for img in TRASH:
-        img_obj = draw_garbage(img)
+    for img in range(0, lvl+1):
+        img_obj = draw_garbage(TRASH[img])
         TRASHOBJ.append(img_obj)
 
     # Set running and time values
@@ -279,12 +281,12 @@ def main():
 
         if current_time - spawn_time > 15:
             # Iterate over the trash images to draw them and check for collision
-            for img in TRASH:
-                img_obj = draw_garbage(img)
+            for img in range(0, lvl+1):
+                img_obj = draw_garbage(TRASH[img])
                 TRASHOBJ.append(img_obj)
             spawn_time = current_time
 
-        if len(TRASHOBJ) == 15 or elapsed_time > 100:
+        if len(TRASHOBJ) >= 15 or elapsed_time > 100:
             # if time is over then you lost
             # if all the screen is full of garbage then you lost
             lose_window()
@@ -301,8 +303,12 @@ def main():
                 # code to quit the program
 
         if not TRASHOBJ:
-            wining_window()
-            run = False
+            winning_window()
+            if lvl >= 4:
+                run = False
+            else:
+                lvl += 1
+                main()
 
         # Check for collision between turtle and trash objects
         check_collision()
@@ -330,11 +336,8 @@ def main():
                 moving_obj.rect.move_ip(event.rel)
 
         draw(BG, img_obj, elapsed_time)
-        draw_t(organic_t)
-        draw_t(metal_t)
-        draw_t(glass_t)
-        draw_t(plastic_t)
-        draw_t(paper_t)
+        for t in range(0, lvl+1):
+            draw_t(TURTLEOBJ[t])
 
         pygame.display.update()  # Update the GUI pygame
         clock.tick(FPS)  # set FPS
