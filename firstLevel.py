@@ -34,6 +34,7 @@ FONT = pygame.font.SysFont("open sans", 111, True, True)
 # varibles for tracking the number of objects on the screen
 lvl = 1
 trash_iterator = 5
+locations = []
 
 
 def play_music():
@@ -70,11 +71,9 @@ class TurtleObj:
         self.vel = 100
         # Draw rectangle around the image
         self.rect = self.img.get_rect()
-        self.rect.center = (
-            random.randint(self.vel, WIDTH - self.vel),
-            random.randint(self.vel, HEIGHT - self.vel),
-        )
-
+        x = random.randint(self.vel, WIDTH - self.vel)
+        y = random.randint(self.vel, HEIGHT - self.vel)
+        self.rect.center = check_and_append(x, y, self.vel)
 
 def lose_window():
     cap = cv2.VideoCapture('vids/game over.mov')  # שם של קובץ
@@ -224,14 +223,6 @@ def draw_turtle(img):
     return TurtleObj(img)
 
 
-metal_t = draw_turtle('images/GrayT.png')
-organic_t = draw_turtle('images/BrownT.png')
-glass_t = draw_turtle('images/PurpleT.png')
-paper_t = draw_turtle('images/BlueT.png')
-plastic_t = draw_turtle('images/YellowT.png')
-TURTLEOBJ = [metal_t, organic_t, glass_t, paper_t, plastic_t]
-
-
 def draw(BG, img_obj, elapsed_time):
     # Draw the background, trash images, and update the screen
     WIN.blit(BG, (0, 0))
@@ -260,13 +251,27 @@ def check_collision():
         elif plastic_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/Bamba.png":
             TRASHOBJ.remove(trash_obj)
 
+def check_and_append(x, y, vel):
+    while (x, y) in locations or (x, y) in [loc for loc in locations if isinstance(loc, tuple)]:
+        x = random.randint(vel, WIDTH - vel)
+        y = random.randint(vel, HEIGHT - vel)
+    locations.append((x, y))
+    return (x, y)
+
+metal_t = draw_turtle('images/GrayT.png')
+organic_t = draw_turtle('images/BrownT.png')
+glass_t = draw_turtle('images/PurpleT.png')
+paper_t = draw_turtle('images/BlueT.png')
+plastic_t = draw_turtle('images/YellowT.png')
+TURTLEOBJ = [metal_t, organic_t, glass_t, paper_t, plastic_t]
 
 def main():
-    global moving_obj, lvl
+    global moving_obj, lvl, trash_iterator
 
-    for img in range(0, lvl+1):
-        img_obj = draw_garbage(TRASH[img])
-        TRASHOBJ.append(img_obj)
+    for i in range(trash_iterator):
+        for img in range(0, lvl+1):
+            img_obj = draw_garbage(TRASH[img])
+            TRASHOBJ.append(img_obj)
 
     # Set running and time values
     run = True
@@ -309,6 +314,7 @@ def main():
                 run = False
             else:
                 lvl += 1
+                trash_iterator -= 1
                 main()
 
         # Check for collision between turtle and trash objects
