@@ -30,7 +30,7 @@ TRASHOBJ, TURTLEOBJ = [], []
 # Set a variable to store the current movable image object
 moving_obj = None
 FPS = 15
-FONT = pygame.font.SysFont("comicsans", 30)
+FONT = pygame.font.SysFont("open sans", 111, True, True)
 lvl = 1  # a var for tracking the number of objects on the screen
 
 
@@ -183,20 +183,22 @@ def backstory_introduction():
 
 
 def welcome_window():
-    button_pos = (WIDTH / 2 - 70, 500)
-    button_size = (150, 50)
-    WIN.set_alpha(128)
-    surface = pygame.Surface(button_size)
-    surface.set_alpha(128)  # alpha level
-    surface.fill((255, 255, 255))  # this fills the entire surface
     startmenu = pygame.image.load('images/start (2).png')
     startmenu = pygame.transform.scale(startmenu, (WIDTH, HEIGHT))
+
+    btn = pygame.Rect(WIDTH / 2 - 135, HEIGHT / 2 + HEIGHT / 3, 270 ,70)
+
+    txt = FONT.render("START", 1, "white")
+    text_width, text_height = FONT.size("START")
+    txt_pos = (WIDTH / 2 - text_width / 2, HEIGHT / 2 + HEIGHT / 3)
+
     run = True
     while run:
         pygame.time.delay(10)
         WIN.blit(startmenu, (0, 0))
         # draw button
-        WIN.blit(surface, button_pos)
+        pygame.draw.rect(WIN, "#004AAD", btn)
+        WIN.blit(txt, txt_pos)
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -206,10 +208,7 @@ def welcome_window():
                 mouse_pos = event.pos  # gets mouse position
 
                 # checks if mouse position is over the button
-
-                if (
-                    button_pos[0] < mouse_pos[0] < button_pos[0] + button_size[0]
-                ) and (button_pos[1] < mouse_pos[1] < button_pos[1] + button_size[1]):
+                if btn.collidepoint(mouse_pos):
                     run = False
                     main()
             # start the main game
@@ -347,6 +346,6 @@ def main():
 
 if __name__ == '__main__':
     play_music()
-    backstory_introduction()
     opening()
+    backstory_introduction()
     welcome_window()
