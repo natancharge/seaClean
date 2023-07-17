@@ -68,12 +68,23 @@ class TurtleObj:
     def __init__(self, img_path):
         # Take image as input
         self.img = pygame.image.load(img_path)
-        self.vel = 100
+        self.vel = 100 
+        self.speed = 2 # Adjust this value to control turtle's speed
+        self.direction = 1  # 1 for right, -1 for left
         # Draw rectangle around the image
         self.rect = self.img.get_rect()
         x = random.randint(self.vel, WIDTH - self.vel)
         y = random.randint(self.vel, HEIGHT - self.vel)
         self.rect.center = check_and_append(x, y, self.vel)
+
+    def move(self):
+        # Update turtle's position based on the direction
+        self.rect.move_ip(self.speed * self.direction, 0)
+
+        # Check if the turtle reaches the screen boundaries and change direction
+        if self.rect.left <= 0 or self.rect.right >= WIDTH:
+            self.direction *= -1
+            self.img = pygame.transform.rotate(self.img, 180)
 
 def lose_window():
     cap = cv2.VideoCapture('vids/game over.mov')  # שם של קובץ
@@ -345,6 +356,7 @@ def main():
         draw(BG, img_obj, elapsed_time)
         for t in range(0, lvl+1):
             draw_t(TURTLEOBJ[t])
+            TURTLEOBJ[t].move()
 
         pygame.display.update()  # Update the GUI pygame
         clock.tick(FPS)  # set FPS
@@ -353,7 +365,7 @@ def main():
 
 
 if __name__ == '__main__':
-    play_music()
-    opening()
-    backstory_introduction()
+    # play_music()
+    # opening()
+    # backstory_introduction()
     welcome_window()
