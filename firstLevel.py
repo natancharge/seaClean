@@ -365,7 +365,7 @@ def main():
 
 
 if __name__ == '__main__':
-    # play_music()
-    # opening()
-    # backstory_introduction()
+    play_music()
+    opening()
+    backstory_introduction()
     welcome_window()
