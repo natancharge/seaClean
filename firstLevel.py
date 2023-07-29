@@ -26,6 +26,12 @@ TURTLES = [
     "images/BlueT.png",
     "images/YellowT.png"
 ]
+RULES = [
+    "images/Gameplay explaning.png",
+    "images/Glass introduction.png",
+    "images/Paper introduction.png",
+    "images/Plastic introduction.png"
+]
 TRASHOBJ, TURTLEOBJ = [], []
 # Set a variable to store the current movable image object
 moving_obj = None
@@ -247,6 +253,18 @@ def draw_t(turtle_obj):
     WIN.blit(turtle_obj.img, turtle_obj.rect)
 
 
+def draw_rules(path):
+    img = pygame.transform.scale(pygame.image.load(path), (WIDTH, HEIGHT))
+    t = time.time()
+    run = True
+    while run:
+        current = time.time()
+        if current - t > 5:
+            run = False
+        WIN.blit(img, (0, 0))
+        pygame.display.update()  # Update the GUI pygame
+
+
 def check_collision():
     global TRASHOBJ
     # Check if any trash object has collided with the turtle
@@ -326,6 +344,7 @@ def main():
             else:
                 lvl += 1
                 trash_iterator -= 1
+                draw_rules(RULES[lvl-1])
                 main()
 
         # Check for collision between turtle and trash objects
@@ -368,4 +387,5 @@ if __name__ == '__main__':
     play_music()
     opening()
     backstory_introduction()
+    draw_rules(RULES[0])
     welcome_window()
