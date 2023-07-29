@@ -168,7 +168,7 @@ def opening():
 
 
 def backstory_introduction():
-    cap = cv2.VideoCapture('vids/nnkdfjfl.mp4')  # שם של קובץ
+    cap = cv2.VideoCapture('vids/Backstory.mp4')  # שם של קובץ
 
     while cap.isOpened():
         ret, frame = cap.read()
