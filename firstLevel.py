@@ -41,13 +41,15 @@ FONT = pygame.font.SysFont("open sans", 111, True, True)
 lvl = 1
 trash_iterator = 5
 locations = []
+correct_sfx = pygame.mixer.Sound('sound/correct-6033.mp3')
+correct_sfx.set_volume(0.1)
 
 
 def play_music():
-    pygame.mixer.music.load('scott-buckley-jul.mp3')
+    pygame.mixer.music.load('sound/scott-buckley-jul.mp3')
 
     # Set preferred volume
-    pygame.mixer.music.set_volume(0.2)
+    pygame.mixer.music.set_volume(0.5)
 
     # Play the music
     pygame.mixer.music.play()
@@ -271,14 +273,19 @@ def check_collision():
     for trash_obj in TRASHOBJ:
         if metal_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/can.png":
             TRASHOBJ.remove(trash_obj)
+            correct_sfx.play()
         elif organic_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/Banana.png":
             TRASHOBJ.remove(trash_obj)
+            correct_sfx.play()
         elif glass_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/Bottle.png":
             TRASHOBJ.remove(trash_obj)
+            correct_sfx.play()
         elif paper_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/Paper.png":
             TRASHOBJ.remove(trash_obj)
+            correct_sfx.play()
         elif plastic_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/Bamba.png":
             TRASHOBJ.remove(trash_obj)
+            correct_sfx.play()
 
 def check_and_append(x, y, vel):
     while (x, y) in locations or (x, y) in [loc for loc in locations if isinstance(loc, tuple)]:
@@ -364,8 +371,7 @@ def main():
                         moving_obj = img  # The object we are moving
                         break
 
-            elif event.type == pygame.MOUSEBUTTONUP and moving_obj is not None and moving_obj.rect.collidepoint(
-                    event.pos):
+            elif event.type == pygame.MOUSEBUTTONUP and moving_obj is not None and moving_obj.rect.collidepoint(event.pos):
                 moving_obj = None
 
             # Make your image move continuously
