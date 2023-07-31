@@ -267,23 +267,23 @@ def draw_rules(path):
         pygame.display.update()  # Update the GUI pygame
 
 
-def check_collision():
+def check_collision(moving_obj):
     global TRASHOBJ
     # Check if any trash object has collided with the turtle
     for trash_obj in TRASHOBJ:
-        if metal_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/can.png":
+        if metal_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/can.png" and trash_obj == moving_obj:
             TRASHOBJ.remove(trash_obj)
             correct_sfx.play()
-        elif organic_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/Banana.png":
+        elif organic_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/Banana.png" and trash_obj == moving_obj:
             TRASHOBJ.remove(trash_obj)
             correct_sfx.play()
-        elif glass_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/Bottle.png":
+        elif glass_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/Bottle.png" and trash_obj == moving_obj:
             TRASHOBJ.remove(trash_obj)
             correct_sfx.play()
-        elif paper_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/Paper.png":
+        elif paper_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/Paper.png" and trash_obj == moving_obj:
             TRASHOBJ.remove(trash_obj)
             correct_sfx.play()
-        elif plastic_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/Bamba.png":
+        elif plastic_t.rect.colliderect(trash_obj.rect) and trash_obj.get_path() == "images/Bamba.png" and trash_obj == moving_obj:
             TRASHOBJ.remove(trash_obj)
             correct_sfx.play()
 
@@ -355,7 +355,7 @@ def main():
                 main()
 
         # Check for collision between turtle and trash objects
-        check_collision()
+        check_collision(moving_obj)
 
         # Check for mouse events on the current movable object
         for event in pygame.event.get():  # a loop that runs through all the events on pygame
