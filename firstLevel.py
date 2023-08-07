@@ -19,13 +19,6 @@ TRASH = [
     "images/Paper.png",
     "images/Bamba.png"
 ]
-TURTLES = [
-    "images/GrayT.png",
-    "images/BrownT.png",
-    "images/PurpleT.png",
-    "images/BlueT.png",
-    "images/YellowT.png"
-]
 RULES = [
     "images/Gameplay explaning.png",
     "images/Glass introduction.png",
@@ -294,7 +287,7 @@ def check_and_append(x, y, vel):
     locations.append((x, y))
     return (x, y)
 
-metal_t = draw_turtle('images/GrayT.png')
+metal_t = draw_turtle(['images/GrayT.png', 'images/MetalTM.png'])
 organic_t = draw_turtle('images/BrownT.png')
 glass_t = draw_turtle('images/PurpleT.png')
 paper_t = draw_turtle('images/BlueT.png')
