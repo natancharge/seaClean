@@ -68,7 +68,11 @@ class TrashObj:
 class TurtleObj:
     def __init__(self, img_path):
         # Take image as input
-        self.img = pygame.image.load(img_path)
+        self.img_path = img_path
+        self.i = 0
+        self.img1 =  pygame.image.load(self.img_path[0])
+        self.img2 =  pygame.image.load(self.img_path[1])
+        self.img = pygame.image.load(self.img_path[self.i])
         self.vel = 100 
         self.speed = 2 # Adjust this value to control turtle's speed
         self.direction = 1  # 1 for right, -1 for left
@@ -78,6 +82,13 @@ class TurtleObj:
         y = random.randint(self.vel, HEIGHT - self.vel)
         self.rect.center = check_and_append(x, y, self.vel)
 
+    def rotate(self):
+        # Rotate the turtle image by 180 degrees
+        self.img1 = pygame.transform.rotate(self.img1, 180)
+        self.img2 = pygame.transform.rotate(self.img2, 180)
+        self.img = pygame.transform.rotate(self.img, 180)
+
+
     def move(self):
         # Update turtle's position based on the direction
         self.rect.move_ip(self.speed * self.direction, 0)
@@ -85,7 +96,16 @@ class TurtleObj:
         # Check if the turtle reaches the screen boundaries and change direction
         if self.rect.left <= 0 or self.rect.right >= WIDTH:
             self.direction *= -1
-            self.img = pygame.transform.rotate(self.img, 180)
+            self.rotate()
+
+    def update_img(self):
+        match(self.i):
+            case 0:
+                self.i += 1
+                self.img = self.img2
+            case 1:
+                self.i -= 1
+                self.img = self.img1
 
 def lose_window():
     cap = cv2.VideoCapture('vids/game over.mov')  # שם של קובץ
@@ -288,10 +308,10 @@ def check_and_append(x, y, vel):
     return (x, y)
 
 metal_t = draw_turtle(['images/GrayT.png', 'images/MetalTM.png'])
-organic_t = draw_turtle('images/BrownT.png')
-glass_t = draw_turtle('images/PurpleT.png')
-paper_t = draw_turtle('images/BlueT.png')
-plastic_t = draw_turtle('images/YellowT.png')
+organic_t = draw_turtle(['images/BrownT.png', 'images/OrganicTM.png'])
+glass_t = draw_turtle(['images/PurpleT.png', 'images/GlassTM.png'])
+paper_t = draw_turtle(['images/BlueT.png', 'images/PaperTM.png'])
+plastic_t = draw_turtle(['images/YellowT.png', 'images/PlasticTM.png'])
 TURTLEOBJ = [metal_t, organic_t, glass_t, paper_t, plastic_t]
 
 def main():
@@ -306,13 +326,13 @@ def main():
     run = True
     clock = pygame.time.Clock()
     start_time = time.time()
-    spawn_time = start_time
+    spawn_time = spawn_time1 = start_time
 
     # main loop
     while run:
         elapsed_time = time.time() - start_time
         # Spawn new images every 15 seconds
-        current_time = time.time()
+        current_time = current_time1 = time.time()
 
         if current_time - spawn_time > 15:
             # Iterate over the trash images to draw them and check for collision
@@ -374,6 +394,10 @@ def main():
         draw(BG, img_obj, elapsed_time)
         for t in range(0, lvl+1):
             draw_t(TURTLEOBJ[t])
+            if current_time1 - spawn_time1 >= 1:
+                for j in range(0, lvl+1):
+                    TURTLEOBJ[j].update_img()
+                spawn_time1 = current_time1
             TURTLEOBJ[t].move()
 
         pygame.display.update()  # Update the GUI pygame
