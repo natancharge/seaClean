@@ -45,7 +45,7 @@ def play_music():
     pygame.mixer.music.set_volume(0.5)
 
     # Play the music
-    pygame.mixer.music.play()
+    pygame.mixer.music.play(-1)
 
 
 class TrashObj:
