@@ -272,9 +272,8 @@ def draw_turtle(img):
     return TurtleObj(img)
 
 
-def draw(BG, img_obj, elapsed_time):
-    # Draw the background, trash images, and update the screen
-    WIN.blit(BG, (0, 0))
+def draw(img_obj, elapsed_time):
+    # Draw the trash images, and update the screen
     for img_obj in TRASHOBJ:
         WIN.blit(img_obj.img, img_obj.rect)
     time_text = FONT.render(f"Time: {round(100 - elapsed_time)}s", 1, "white")
@@ -403,7 +402,7 @@ def main():
             elif event.type == pygame.MOUSEMOTION and moving_obj:
                 moving_obj.rect.move_ip(event.rel)
 
-        draw(BG, img_obj, elapsed_time)
+        WIN.blit(BG, (0, 0))
         for t in range(0, lvl+1):
             draw_t(TURTLEOBJ[t])
             if current_time1 - spawn_time1 >= 1:
@@ -411,6 +410,7 @@ def main():
                     TURTLEOBJ[j].update_img()
                 spawn_time1 = current_time1
             TURTLEOBJ[t].move()
+        draw(img_obj, elapsed_time)
 
         pygame.display.update()  # Update the GUI pygame
         clock.tick(FPS)  # set FPS
@@ -420,7 +420,7 @@ def main():
 
 if __name__ == '__main__':
     play_music()
-    # opening()
-    # backstory_introduction()
-    # draw_rules(RULES[0])
+    opening()
+    backstory_introduction()
+    draw_rules(RULES[0])
     welcome_window()
