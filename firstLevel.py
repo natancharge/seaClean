@@ -70,42 +70,59 @@ class TurtleObj:
         # Take image as input
         self.img_path = img_path
         self.i = 0
-        self.img1 =  pygame.image.load(self.img_path[0])
-        self.img2 =  pygame.image.load(self.img_path[1])
-        self.img = pygame.image.load(self.img_path[self.i])
+        self.images = [pygame.image.load(path) for path in self.img_path]
+        self.img = self.images[self.i]
         self.vel = 100 
-        self.speed = 2 # Adjust this value to control turtle's speed
-        self.direction = 1  # 1 for right, -1 for left
-        # Draw rectangle around the image
+        self.speed = 2
+        self.direction = 1
         self.rect = self.img.get_rect()
         x = random.randint(self.vel, WIDTH - self.vel)
         y = random.randint(self.vel, HEIGHT - self.vel)
         self.rect.center = check_and_append(x, y, self.vel)
 
-    def rotate(self):
-        # Rotate the turtle image by 180 degrees
-        self.img1 = pygame.transform.rotate(self.img1, 180)
-        self.img2 = pygame.transform.rotate(self.img2, 180)
-        self.img = pygame.transform.rotate(self.img, 180)
+        # Border size
+        self.border_size = 1
 
+        # Create a new surface with the new dimensions
+        self.bordered_surface = pygame.Surface(self.rect.size, pygame.SRCALPHA)
+
+        # Update the bordered surface with the initial image
+        self.update_bordered_surface()
+
+    def update_bordered_surface(self):
+        self.bordered_surface.fill((0, 0, 0, 0))  # Clear the surface
+        t_mask = pygame.mask.from_surface(self.img)
+
+        # Blit the character image onto the bordered surface at the calculated position
+        self.bordered_surface.blit(self.img, (self.border_size, self.border_size))
+
+        # Draw the outline onto the bordered surface
+        t_outline = t_mask.outline()
+        pygame.draw.polygon(self.bordered_surface, (255, 255, 255), t_outline, width=self.border_size)
+
+    def rotate(self):
+        for i in range(len(self.images)):
+            self.images[i] = pygame.transform.rotate(self.images[i], 180)
+        self.img = self.images[self.i]
+        self.update_bordered_surface()
 
     def move(self):
-        # Update turtle's position based on the direction
         self.rect.move_ip(self.speed * self.direction, 0)
-
-        # Check if the turtle reaches the screen boundaries and change direction
         if self.rect.left <= 0 or self.rect.right >= WIDTH:
             self.direction *= -1
             self.rotate()
 
     def update_img(self):
-        match(self.i):
-            case 0:
-                self.i += 1
-                self.img = self.img2
-            case 1:
-                self.i -= 1
-                self.img = self.img1
+        self.i = (self.i + 1) % len(self.images)
+        self.img = self.images[self.i]
+        self.update_bordered_surface()
+
+    def get_surf(self):
+        return self.bordered_surface
+
+def draw_t(turtle_obj):
+    WIN.blit(turtle_obj.get_surf(), turtle_obj.rect)
+
 
 def lose_window():
     cap = cv2.VideoCapture('vids/game over.mov')  # שם של קובץ
@@ -263,11 +280,6 @@ def draw(BG, img_obj, elapsed_time):
     time_text = FONT.render(f"Time: {round(100 - elapsed_time)}s", 1, "white")
     WIN.blit(time_text, (10, 10))
 
-
-def draw_t(turtle_obj):
-    WIN.blit(turtle_obj.img, turtle_obj.rect)
-
-
 def draw_rules(path):
     img = pygame.transform.scale(pygame.image.load(path), (WIDTH, HEIGHT))
     t = time.time()
@@ -408,7 +420,7 @@ def main():
 
 if __name__ == '__main__':
     play_music()
-    opening()
-    backstory_introduction()
-    draw_rules(RULES[0])
+    # opening()
+    # backstory_introduction()
+    # draw_rules(RULES[0])
     welcome_window()
