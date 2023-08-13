@@ -150,9 +150,6 @@ def lose_window():
         frame = cv2.flip(frame, 0)
         frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
 
-        if pygame.event.get() == pygame.QUIT:
-            pygame.quit()
-
         if ret:
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             frame = pygame.surfarray.make_surface(frame)
@@ -176,9 +173,6 @@ def winning_window():
 
         frame = cv2.flip(frame, 0)
         frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
-
-        if pygame.event.get() == pygame.QUIT:
-            pygame.quit()
 
         if ret:
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -204,9 +198,6 @@ def opening():
         frame = cv2.flip(frame, 0)
         frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
 
-        if pygame.event.get() == pygame.QUIT:
-            pygame.quit()
-
         if ret:
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             frame = pygame.surfarray.make_surface(frame)
@@ -230,9 +221,6 @@ def backstory_introduction():
 
         frame = cv2.flip(frame, 0)
         frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
-
-        if pygame.event.get() == pygame.QUIT:
-            pygame.quit()
 
         if ret:
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -298,12 +286,12 @@ def draw(img_obj, elapsed_time):
 
 def draw_rules(path):
     img = pygame.transform.scale(pygame.image.load(path), (WIDTH, HEIGHT))
-    t = time.time()
     run = True
     while run:
-        current = time.time()
-        if current - t > 5:
-            run = False
+        for event in pygame.event.get():  # a loop that runs through all the events on pygame
+            # Close if the user quits the game
+            if event.type == pygame.QUIT:
+                run = False
         WIN.blit(img, (0, 0))
         pygame.display.update()  # Update the GUI pygame
 
