@@ -156,8 +156,12 @@ def lose_window():
             WIN.blit(frame, (WIDTH / 2 - frame.get_width() / 2, HEIGHT / 2 - frame.get_height() / 2))
             pygame.display.update()
 
-            if cv2.waitKey(1) == 27:
-                break
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:  # Check for the quit event
+                    cap.release()
+                    cv2.destroyAllWindows()
+                    pygame.quit()
+                    return  # Exit the function and close the window
         else:
             break
 
@@ -180,8 +184,12 @@ def winning_window():
             WIN.blit(frame, (WIDTH / 2 - frame.get_width() / 2, HEIGHT / 2 - frame.get_height() / 2))
             pygame.display.update()
 
-            if cv2.waitKey(1) == 27:
-                break
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:  # Check for the quit event
+                    cap.release()
+                    cv2.destroyAllWindows()
+                    pygame.quit()
+                    return  # Exit the function and close the window
         else:
             break
 
@@ -204,8 +212,12 @@ def opening():
             WIN.blit(frame, (WIDTH / 2 - frame.get_width() / 2, HEIGHT / 2 - frame.get_height() / 2))
             pygame.display.update()
 
-            if cv2.waitKey(1) == 27:
-                break
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:  # Check for the quit event
+                    cap.release()
+                    cv2.destroyAllWindows()
+                    pygame.quit()
+                    return  # Exit the function and close the window
         else:
             break
 
@@ -234,9 +246,6 @@ def backstory_introduction():
                     cv2.destroyAllWindows()
                     pygame.quit()
                     return  # Exit the function and close the window
-
-            if cv2.waitKey(1) == 27:
-                break
         else:
             break
 
