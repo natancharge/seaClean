@@ -1,3 +1,7 @@
+import pygame, sys
+from firstLevel import WIN
+pygame.init()
+gui_font = pygame.font.Font(None,30)
 class Button:
 	def __init__(self,text,width,height,pos,elevation):
 		#Core attributes 
@@ -25,9 +29,9 @@ class Button:
 		self.bottom_rect.midtop = self.top_rect.midtop
 		self.bottom_rect.height = self.top_rect.height + self.dynamic_elecation
 
-		pygame.draw.rect(screen,self.bottom_color, self.bottom_rect,border_radius = 12)
-		pygame.draw.rect(screen,self.top_color, self.top_rect,border_radius = 12)
-		screen.blit(self.text_surf, self.text_rect)
+		pygame.draw.rect(WIN,self.bottom_color, self.bottom_rect,border_radius = 12)
+		pygame.draw.rect(WIN,self.top_color, self.top_rect,border_radius = 12)
+		WIN.blit(self.text_surf, self.text_rect)
 		self.check_click()
 
 	def check_click(self):
