@@ -52,7 +52,7 @@ class TrashObj:
     def __init__(self, img_path):
         # Take image as input
         self.img = pygame.image.load(img_path)
-        self.vel = 10
+        self.vel = 100
         # Draw rectangle around the image
         self.rect = self.img.get_rect()
         self.rect.center = (
@@ -60,6 +60,26 @@ class TrashObj:
             random.randint(self.vel, HEIGHT - self.vel),
         )
         self.img_path = img_path
+        # Border size
+        self.border_size = 3
+
+        # Create a new surface with the new dimensions
+        self.bordered_surface = pygame.Surface(self.rect.size, pygame.SRCALPHA)
+        # Update the bordered surface with the initial image
+        self.update_bordered_surface()
+
+    def update_bordered_surface(self):
+        self.bordered_surface.fill((0, 0, 0, 0))  # Clear the surface
+        t_mask = pygame.mask.from_surface(self.img)
+
+        # Blit the character image onto the bordered surface at the calculated position
+        image_position = (self.border_size, self.border_size)  # Offset by the border size
+        self.bordered_surface.blit(self.img, image_position)
+
+        # Draw the outline onto the bordered surface
+        t_outline = t_mask.outline()
+        adjusted_outline = [(p[0] + self.border_size, p[1] + self.border_size) for p in t_outline]
+        pygame.draw.polygon(self.bordered_surface, (255, 255, 255), adjusted_outline, width=self.border_size)
 
     def get_path(self):
         return self.img_path
@@ -117,11 +137,8 @@ class TurtleObj:
         self.img = self.images[self.i]
         self.update_bordered_surface()
 
-    def get_surf(self):
-        return self.bordered_surface
-
 def draw_t(turtle_obj):
-    WIN.blit(turtle_obj.get_surf(), turtle_obj.rect)
+    WIN.blit(turtle_obj.bordered_surface, turtle_obj.rect)
 
 
 def lose_window():
@@ -275,7 +292,7 @@ def draw_turtle(img):
 def draw(img_obj, elapsed_time):
     # Draw the trash images, and update the screen
     for img_obj in TRASHOBJ:
-        WIN.blit(img_obj.img, img_obj.rect)
+        WIN.blit(img_obj.bordered_surface, img_obj.rect)
     time_text = FONT.render(f"Time: {round(100 - elapsed_time)}s", 1, "white")
     WIN.blit(time_text, (10, 10))
 
