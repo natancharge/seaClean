@@ -1,7 +1,7 @@
-import pygame
-import time
-import random
 import cv2
+import pygame
+import random
+import time
 from tkinter import messagebox
 
 # Construct the GUI game
@@ -30,7 +30,8 @@ TRASHOBJ, TURTLEOBJ = [], []
 moving_obj = None
 FPS = 15
 FONT = pygame.font.SysFont("open sans", 111, True, True)
-# varibles for tracking the number of objects on the screen
+gui_font = pygame.font.Font(None, 30)
+# variables for tracking the number of objects on the WIN
 lvl = 1
 trash_iterator = 5
 locations = []
@@ -137,6 +138,7 @@ class TurtleObj:
         self.img = self.images[self.i]
         self.update_bordered_surface()
 
+
 def draw_t(turtle_obj):
     WIN.blit(turtle_obj.bordered_surface, turtle_obj.rect)
 
@@ -199,7 +201,6 @@ def winning_window():
 
 def opening():
     cap = cv2.VideoCapture('vids/SEE CLEAN (3).mp4')  # שם של קובץ
-
     while cap.isOpened():
         ret, frame = cap.read()
 
@@ -294,7 +295,7 @@ def draw_turtle(img):
 
 
 def draw(img_obj, elapsed_time):
-    # Draw the trash images, and update the screen
+    # Draw the trash images, and update the WIN
     for img_obj in TRASHOBJ:
         WIN.blit(img_obj.bordered_surface, img_obj.rect)
     time_text = FONT.render(f"Time: {round(100 - elapsed_time)}s", 1, "white")
@@ -302,6 +303,7 @@ def draw(img_obj, elapsed_time):
 
 def draw_rules(path):
     img = pygame.transform.scale(pygame.image.load(path), (WIDTH, HEIGHT))
+    skip_btn = Button('SKIP', 135, 35, (WIDTH - 200, HEIGHT - 50), 5)
     run = True
     while run:
         for event in pygame.event.get():  # a loop that runs through all the events on pygame
@@ -309,6 +311,10 @@ def draw_rules(path):
             if event.type == pygame.QUIT:
                 run = False
         WIN.blit(img, (0, 0))
+        skip_btn.draw(WIN)
+        if not skip_btn.pressed:
+            run = False
+            skip_btn.pressed = False
         pygame.display.update()  # Update the GUI pygame
 
 
@@ -375,7 +381,7 @@ def main():
 
         if len(TRASHOBJ) >= 15 or elapsed_time > 100:
             # if time is over then you lost
-            # if all the screen is full of garbage then you lost
+            # if all the WIN is full of garbage then you lost
             lose_window()
             ans = messagebox.askquestion("You lost...", "Wanna try again?")
 
