@@ -49,6 +49,85 @@ def play_music():
     pygame.mixer.music.play(-1)
 
 
+class Button:
+    def __init__(self, text, width, height, pos, elevation, gui_font):
+        # Core attributes
+        self.pressed = False
+        self.elevation = elevation
+        self.dynamic_elevation = elevation
+        self.original_y_pos = pos[1]
+
+        # Define the top rectangle for the button
+        self.top_rect = pygame.Rect(pos, (width, height))
+        self.top_color = '#475F77'
+
+        # Define the bottom rectangle for the button (used for elevation effect)
+        self.bottom_rect = pygame.Rect(pos, (width, height))
+        self.bottom_color = '#354B5E'
+
+        # Render the text on the button
+        self.text_surf = gui_font.render(text, True, '#FFFFFF')
+        self.text_rect = self.text_surf.get_rect(center=self.top_rect.center)
+
+    def __init__(self, text, width, height, pos, elevation):
+        # Core attributes
+        self.pressed = False
+        self.elevation = elevation
+        self.dynamic_elevation = elevation
+        self.original_y_pos = pos[1]
+
+        # Define the top rectangle for the button
+        self.top_rect = pygame.Rect(pos, (width, height))
+        self.top_color = '#475F77'
+
+        # Define the bottom rectangle for the button (used for elevation effect)
+        self.bottom_rect = pygame.Rect(pos, (width, height))
+        self.bottom_color = '#354B5E'
+
+        # Render the text on the button
+        self.text_surf = gui_font.render(text, True, '#FFFFFF')
+        self.text_rect = self.text_surf.get_rect(center=self.top_rect.center)
+
+    def draw(self, screen):
+        # Update positions based on elevation
+        self.update_positions()
+
+        # Draw the button on the screen
+        pygame.draw.rect(screen, self.bottom_color, self.bottom_rect, border_radius=12)
+        pygame.draw.rect(screen, self.top_color, self.top_rect, border_radius=12)
+        screen.blit(self.text_surf, self.text_rect)
+
+    def update_positions(self):
+        # Update positions of elements based on elevation
+        self.top_rect.y = self.original_y_pos - self.dynamic_elevation
+        self.text_rect.center = self.top_rect.center
+
+        self.bottom_rect.midtop = self.top_rect.midtop
+        self.bottom_rect.height = self.top_rect.height + self.dynamic_elevation
+
+    def check_click(self, var):
+        # Check if the mouse is over the button
+        mouse_pos = pygame.mouse.get_pos()
+
+        if self.top_rect.collidepoint(mouse_pos):
+            self.top_color = '#D74B4B'
+            if pygame.mouse.get_pressed()[0]:
+                # Button pressed
+                self.dynamic_elevation = 0
+                self.pressed = True
+            else:
+                # Mouse released
+                self.dynamic_elevation = self.elevation
+                if self.pressed:
+                    self.pressed = False
+                    return False
+        else:
+            # Mouse not over the button
+            self.dynamic_elevation = self.elevation
+            self.top_color = '#475F77'
+        return True
+
+
 class TrashObj:
     def __init__(self, img_path):
         # Take image as input
@@ -312,9 +391,7 @@ def draw_rules(path):
                 run = False
         WIN.blit(img, (0, 0))
         skip_btn.draw(WIN)
-        if not skip_btn.pressed:
-            run = False
-            skip_btn.pressed = False
+        run = skip_btn.check_click(run)
         pygame.display.update()  # Update the GUI pygame
 
 
