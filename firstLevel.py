@@ -50,26 +50,7 @@ def play_music():
 
 
 class Button:
-    def __init__(self, text, width, height, pos, elevation, gui_font):
-        # Core attributes
-        self.pressed = False
-        self.elevation = elevation
-        self.dynamic_elevation = elevation
-        self.original_y_pos = pos[1]
-
-        # Define the top rectangle for the button
-        self.top_rect = pygame.Rect(pos, (width, height))
-        self.top_color = '#475F77'
-
-        # Define the bottom rectangle for the button (used for elevation effect)
-        self.bottom_rect = pygame.Rect(pos, (width, height))
-        self.bottom_color = '#354B5E'
-
-        # Render the text on the button
-        self.text_surf = gui_font.render(text, True, '#FFFFFF')
-        self.text_rect = self.text_surf.get_rect(center=self.top_rect.center)
-
-    def __init__(self, text, width, height, pos, elevation):
+    def __init__(self, text, width, height, pos, elevation, gui_font=gui_font):
         # Core attributes
         self.pressed = False
         self.elevation = elevation
@@ -337,32 +318,22 @@ def welcome_window():
     startmenu = pygame.image.load('images/start (2).png')
     startmenu = pygame.transform.scale(startmenu, (WIDTH, HEIGHT))
 
-    btn = pygame.Rect(WIDTH / 2 - 135, HEIGHT / 2 + HEIGHT / 3, 270 ,70)
-
-    txt = FONT.render("START", 1, "white")
-    text_width, text_height = FONT.size("START")
-    txt_pos = (WIDTH / 2 - text_width / 2, HEIGHT / 2 + HEIGHT / 3)
+    start_btn = Button('START', 270 ,70, (WIDTH / 2 - 135, HEIGHT / 2 + HEIGHT / 3), 5, FONT)
 
     run = True
     while run:
         pygame.time.delay(10)
         WIN.blit(startmenu, (0, 0))
         # draw button
-        pygame.draw.rect(WIN, "#004AAD", btn)
-        WIN.blit(txt, txt_pos)
+        start_btn.draw(WIN)
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                break
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_pos = event.pos  # gets mouse position
-
-                # checks if mouse position is over the button
-                if btn.collidepoint(mouse_pos):
-                    run = False
-                    main()
-            # start the main game
+                quit()
+        run = start_btn.check_click(run)
+    # start the main game
+    main()
 
 
 def draw_garbage(img):
@@ -382,16 +353,17 @@ def draw(img_obj, elapsed_time):
 
 def draw_rules(path):
     img = pygame.transform.scale(pygame.image.load(path), (WIDTH, HEIGHT))
-    skip_btn = Button('SKIP', 135, 35, (WIDTH - 200, HEIGHT - 50), 5)
+    continue_btn = Button('Continue', 135, 35, (WIDTH - 200, HEIGHT - 50), 5)
     run = True
     while run:
         for event in pygame.event.get():  # a loop that runs through all the events on pygame
             # Close if the user quits the game
             if event.type == pygame.QUIT:
-                run = False
+                pygame.quit()
+                quit()
         WIN.blit(img, (0, 0))
-        skip_btn.draw(WIN)
-        run = skip_btn.check_click(run)
+        continue_btn.draw(WIN)
+        run = continue_btn.check_click(run)
         pygame.display.update()  # Update the GUI pygame
 
 
