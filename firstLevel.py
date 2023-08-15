@@ -288,8 +288,9 @@ def opening():
 
 def backstory_introduction():
     cap = cv2.VideoCapture('vids/Backstory.mp4')
-
-    while cap.isOpened():
+    skip_btn = Button('Skip', 135, 35, (WIDTH - 200, HEIGHT - 50), 5)
+    run = cap.isOpened()
+    while run:
         ret, frame = cap.read()
 
         frame = cv2.flip(frame, 0)
@@ -299,6 +300,8 @@ def backstory_introduction():
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             frame = pygame.surfarray.make_surface(frame)
             WIN.blit(frame, (WIDTH / 2 - frame.get_width() / 2, HEIGHT / 2 - frame.get_height() / 2))
+            skip_btn.draw(WIN)
+            run = skip_btn.check_click(run)
             pygame.display.update()
 
             for event in pygame.event.get():
@@ -318,7 +321,7 @@ def welcome_window():
     startmenu = pygame.image.load('images/start (2).png')
     startmenu = pygame.transform.scale(startmenu, (WIDTH, HEIGHT))
 
-    start_btn = Button('START', 270 ,70, (WIDTH / 2 - 135, HEIGHT / 2 + HEIGHT / 3), 5, FONT)
+    start_btn = Button('START', 270 ,70, (WIDTH / 2 - 135, HEIGHT / 2 + HEIGHT / 3), 10, FONT)
 
     run = True
     while run:
