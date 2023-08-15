@@ -20,7 +20,7 @@ TRASH = [
     "images/Bamba.png"
 ]
 RULES = [
-    "images/Gameplay explaning.png",
+    "images/Gameplay explaining.png",
     "images/Glass introduction.png",
     "images/Paper introduction.png",
     "images/Plastic introduction.png"
@@ -59,11 +59,11 @@ class Button:
 
         # Define the top rectangle for the button
         self.top_rect = pygame.Rect(pos, (width, height))
-        self.top_color = '#475F77'
+        self.top_color = '#0F52BA'
 
         # Define the bottom rectangle for the button (used for elevation effect)
         self.bottom_rect = pygame.Rect(pos, (width, height))
-        self.bottom_color = '#354B5E'
+        self.bottom_color = '#002366'
 
         # Render the text on the button
         self.text_surf = gui_font.render(text, True, '#FFFFFF')
@@ -91,7 +91,7 @@ class Button:
         mouse_pos = pygame.mouse.get_pos()
 
         if self.top_rect.collidepoint(mouse_pos):
-            self.top_color = '#D74B4B'
+            self.top_color = '#FA8072'
             if pygame.mouse.get_pressed()[0]:
                 # Button pressed
                 self.dynamic_elevation = 0
@@ -105,7 +105,7 @@ class Button:
         else:
             # Mouse not over the button
             self.dynamic_elevation = self.elevation
-            self.top_color = '#475F77'
+            self.top_color = '#0F52BA'
         return True
 
 
