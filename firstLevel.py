@@ -20,7 +20,7 @@ TRASH = [
     "images/Bamba.png"
 ]
 RULES = [
-    "images/Gameplay explaining.png",
+    "images/Gameplay_explaining.png",
     "images/Glass introduction.png",
     "images/Paper introduction.png",
     "images/Plastic introduction.png"
