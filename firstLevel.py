@@ -49,6 +49,15 @@ def play_music():
     pygame.mixer.music.play(-1)
 
 
+class Explosion(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = []
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+
 class Button:
     def __init__(self, text, width, height, pos, elevation, gui_font=gui_font):
         # Core attributes
@@ -287,10 +296,14 @@ def opening():
 
 
 def backstory_introduction():
+    DR_voice = pygame.mixer.Sound('sound/Introductiont.mp3')
+    DR_voice.set_volume(0.8)
+
     cap = cv2.VideoCapture('vids/Backstory.mp4')
     skip_btn = Button('Skip', 135, 35, (WIDTH - 200, HEIGHT - 50), 5)
     run = cap.isOpened()
     while run:
+        DR_voice.play()
         ret, frame = cap.read()
 
         frame = cv2.flip(frame, 0)
