@@ -356,7 +356,7 @@ def opening():
 
 
 def backstory_introduction():
-    DR_voice = pygame.mixer.Sound('sound/Introductiont.mp3')
+    DR_voice = pygame.mixer.Sound('sound/Introduction.mp3')
     DR_voice.set_volume(0.8)
 
     cap = cv2.VideoCapture('vids/Backstory.mp4')
