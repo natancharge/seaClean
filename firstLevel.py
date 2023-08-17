@@ -64,7 +64,7 @@ class Explosion(pygame.sprite.Sprite):
         explosion_speed = 4
         self.counter += 1
 
-        if self.index < len(self.image) - 1 and self.counter >= explosion_speed:
+        if self.index < len(self.images) - 1 and self.counter >= explosion_speed:
             self.counter = 0
             self.index += 1
             self.image = self.images[self.index]
@@ -229,45 +229,38 @@ class SeaMine(pygame.sprite.Sprite):
 
         self.image = pygame.image.load(mine_image_path)
         self.rect = self.image.get_rect()
+        self.vel = 120
 
         # Determine the initial side of appearance (0: top, 1: right, 2: bottom, 3: left)
         self.side = random.choice([0, 1, 2, 3])
-        self.speed = 2
-        self.x_speed = 0
-        self.y_speed = 0
+        self.x_speed = 2
+        self.y_speed = 2
         self.explosion = None
 
         if self.side == 0:  # Top
-            self.rect.centerx = random.randint(0, screen_width)
+            self.rect.centerx = random.randint(self.vel, screen_width - self.vel)
             self.rect.bottom = 0
-            self.y_speed = self.speed
         elif self.side == 1:  # Right
             self.rect.right = screen_width
-            self.rect.centery = random.randint(0, screen_height)
-            self.x_speed = -self.speed
+            self.rect.centery = random.randint(self.vel, screen_height - self.vel)
         elif self.side == 2:  # Bottom
-            self.rect.centerx = random.randint(0, screen_width)
+            self.rect.centerx = random.randint(self.vel, screen_width - self.vel)
             self.rect.top = screen_height
-            self.y_speed = -self.speed
         elif self.side == 3:  # Left
             self.rect.left = 0
-            self.rect.centery = random.randint(0, screen_height)
-            self.x_speed = self.speed
+            self.rect.centery = random.randint(self.vel, screen_height - self.vel)
 
     def update(self):
         self.rect.x += self.x_speed
         self.rect.y += self.y_speed
 
         # Handle bouncing off the sides of the screen
-        if (
-            self.side == 0 and self.rect.bottom >= pygame.display.get_surface().get_height()
-            or self.side == 1 and self.rect.left <= 0
-            or self.side == 2 and self.rect.top <= 0
-            or self.side == 3 and self.rect.right >= pygame.display.get_surface().get_width()
-        ):
-            self.kill()
+        if self.rect.top <= 0 or self.rect.bottom >= HEIGHT:
+            self.y_speed *= -1
+        if self.rect.left <= 0 or self.rect.right >= WIDTH:
+            self.x_speed *= -1
 
-    def collide(self, player_rect):
+    def collide(self, player_rect, explosion_group):
         if self.rect.colliderect(player_rect):
             self.explosion = Explosion(self.rect.centerx, self.rect.centery)
             explosion_group.add(self.explosion)
@@ -578,6 +571,10 @@ def main():
                 spawn_time1 = current_time1
             TURTLEOBJ[t].move()
         draw(img_obj, elapsed_time)
+        
+        # Update and draw explosions
+        explosion_group.update()
+        explosion_group.draw(WIN)
 
         # Update and draw mines
         mine_group.update()
@@ -586,7 +583,7 @@ def main():
         # Iterate over the mines to check for collision with the player
         if moving_obj is not None:
             for mine in mine_group:
-                mine.collide(moving_obj.rect)
+                mine.collide(moving_obj.rect, explosion_group)
 
         # Spawn a new mine every 5 seconds
         current_time = time.time()
