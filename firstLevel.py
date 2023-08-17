@@ -28,7 +28,7 @@ RULES = [
 TRASHOBJ, TURTLEOBJ = [], []
 # Set a variable to store the current movable image object
 moving_obj = None
-FPS = 15
+FPS = 60
 FONT = pygame.font.SysFont("open sans", 111, True, True)
 gui_font = pygame.font.Font(None, 30)
 # variables for tracking the number of objects on the WIN
@@ -47,15 +47,30 @@ def play_music():
 
     # Play the music
     pygame.mixer.music.play(-1)
+    
 
 
 class Explosion(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        self.image = []
+        self.images = [pygame.image.load(f"images/exp{i}.png") for i in range(1, 6)]
+        self.index = 0
+        self.image = self.images[self.index]
         self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
+        self.rect.center = [x, y]
+        self.counter = 0
+
+    def update(self):
+        explosion_speed = 4
+        self.counter += 1
+
+        if self.index < len(self.image) - 1 and self.counter >= explosion_speed:
+            self.counter = 0
+            self.index += 1
+            self.image = self.images[self.index]
+
+        if self.index == len(self.images) - 1 and self.counter >= explosion_speed:
+            self.kill()
 
 
 class Button:
@@ -208,6 +223,58 @@ class TurtleObj:
         self.update_bordered_surface()
 
 
+class SeaMine(pygame.sprite.Sprite):
+    def __init__(self, screen_width, screen_height, mine_image_path):
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = pygame.image.load(mine_image_path)
+        self.rect = self.image.get_rect()
+
+        # Determine the initial side of appearance (0: top, 1: right, 2: bottom, 3: left)
+        self.side = random.choice([0, 1, 2, 3])
+        self.speed = 2
+        self.x_speed = 0
+        self.y_speed = 0
+        self.explosion = None
+
+        if self.side == 0:  # Top
+            self.rect.centerx = random.randint(0, screen_width)
+            self.rect.bottom = 0
+            self.y_speed = self.speed
+        elif self.side == 1:  # Right
+            self.rect.right = screen_width
+            self.rect.centery = random.randint(0, screen_height)
+            self.x_speed = -self.speed
+        elif self.side == 2:  # Bottom
+            self.rect.centerx = random.randint(0, screen_width)
+            self.rect.top = screen_height
+            self.y_speed = -self.speed
+        elif self.side == 3:  # Left
+            self.rect.left = 0
+            self.rect.centery = random.randint(0, screen_height)
+            self.x_speed = self.speed
+
+    def update(self):
+        self.rect.x += self.x_speed
+        self.rect.y += self.y_speed
+
+        # Handle bouncing off the sides of the screen
+        if (
+            self.side == 0 and self.rect.bottom >= pygame.display.get_surface().get_height()
+            or self.side == 1 and self.rect.left <= 0
+            or self.side == 2 and self.rect.top <= 0
+            or self.side == 3 and self.rect.right >= pygame.display.get_surface().get_width()
+        ):
+            self.kill()
+
+    def collide(self, player_rect):
+        if self.rect.colliderect(player_rect):
+            self.explosion = Explosion(self.rect.centerx, self.rect.centery)
+            explosion_group.add(self.explosion)
+            self.kill()
+
+
+
 def draw_t(turtle_obj):
     WIN.blit(turtle_obj.bordered_surface, turtle_obj.rect)
 
@@ -321,11 +388,13 @@ def backstory_introduction():
                 if event.type == pygame.QUIT:  # Check for the quit event
                     cap.release()
                     cv2.destroyAllWindows()
+                    DR_voice.stop()
                     pygame.quit()
                     return  # Exit the function and close the window
         else:
             break
 
+    DR_voice.stop()
     cap.release()
     cv2.destroyAllWindows()
 
@@ -425,11 +494,17 @@ def main():
             img_obj = draw_garbage(TRASH[img])
             TRASHOBJ.append(img_obj)
 
+    # Create a sprite group for explosions
+    explosion_group = pygame.sprite.Group()
+    # Create a sprite group for mines
+    mine_group = pygame.sprite.Group()
+
     # Set running and time values
     run = True
     clock = pygame.time.Clock()
     start_time = time.time()
     spawn_time = spawn_time1 = start_time
+    mine_spawn_timer = 0  # Initialize the mine spawn timer
 
     # main loop
     while run:
@@ -503,6 +578,22 @@ def main():
                 spawn_time1 = current_time1
             TURTLEOBJ[t].move()
         draw(img_obj, elapsed_time)
+
+        # Update and draw mines
+        mine_group.update()
+        mine_group.draw(WIN)
+
+        # Iterate over the mines to check for collision with the player
+        if moving_obj is not None:
+            for mine in mine_group:
+                mine.collide(moving_obj.rect)
+
+        # Spawn a new mine every 5 seconds
+        current_time = time.time()
+        if current_time - mine_spawn_timer > 5:
+            new_mine = SeaMine(WIDTH, HEIGHT, "images/image.png")
+            mine_group.add(new_mine)
+            mine_spawn_timer = current_time
 
         pygame.display.update()  # Update the GUI pygame
         clock.tick(FPS)  # set FPS
