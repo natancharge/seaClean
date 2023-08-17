@@ -295,6 +295,7 @@ def lose_window():
                     return  # Exit the function and close the window
         else:
             break
+        time.sleep(0.1)
 
     cap.release()
     cv2.destroyAllWindows()
@@ -323,6 +324,7 @@ def winning_window():
                     return  # Exit the function and close the window
         else:
             break
+        time.sleep(0.1)
 
     cap.release()
     cv2.destroyAllWindows()
