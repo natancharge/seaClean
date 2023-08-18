@@ -265,6 +265,7 @@ class SeaMine(pygame.sprite.Sprite):
             self.explosion = Explosion(self.rect.centerx, self.rect.centery)
             explosion_group.add(self.explosion)
             self.kill()
+            lose_window()
 
 
 
@@ -295,10 +296,21 @@ def lose_window():
                     return  # Exit the function and close the window
         else:
             break
-        time.sleep(0.1)
+        time.sleep(0.05)
 
     cap.release()
     cv2.destroyAllWindows()
+
+    ans = messagebox.askquestion("You lost...", "Wanna try again?")
+    if ans == "yes":
+        TRASHOBJ.clear()
+        start_time = time.time() + 100
+        spawn_time = start_time
+        main()
+        # code to return to the program
+    else:
+        pygame.quit()
+        # code to quit the program
 
 
 def winning_window():
@@ -518,17 +530,6 @@ def main():
             # if time is over then you lost
             # if all the WIN is full of garbage then you lost
             lose_window()
-            ans = messagebox.askquestion("You lost...", "Wanna try again?")
-
-            if ans == "yes":
-                TRASHOBJ.clear()
-                start_time = time.time() + 100
-                spawn_time = start_time
-                main()
-                # code to return to the program
-            else:
-                run = False
-                # code to quit the program
 
         if not TRASHOBJ:
             winning_window()
