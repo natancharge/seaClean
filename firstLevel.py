@@ -47,8 +47,7 @@ def play_music():
     pygame.mixer.music.set_volume(0.5)
 
     # Play the music
-    pygame.mixer.music.play(-1)
-    
+    pygame.mixer.music.play(-1)  
 
 
 class Explosion(pygame.sprite.Sprite):
@@ -60,18 +59,26 @@ class Explosion(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = [x, y]
         self.counter = 0
+        self.explosion_start_time = time.time()
+        self.explosion_speed = 4
 
     def update(self):
-        explosion_speed = 4
         self.counter += 1
 
-        if self.index < len(self.images) - 1 and self.counter >= explosion_speed:
+        if self.is_finished():
+            lose_window()
+            self.kill()
+
+        if self.index < len(self.images) - 1 and self.counter >= self.explosion_speed:
             self.counter = 0
             self.index += 1
             self.image = self.images[self.index]
 
-        if self.index == len(self.images) - 1 and self.counter >= explosion_speed:
+        if self.index == len(self.images) - 1 and self.counter >= self.explosion_speed:
             self.kill()
+
+    def is_finished(self):
+        return self.index == len(self.images) - 1 and self.counter >= self.explosion_speed
 
 
 class Button:
@@ -274,7 +281,6 @@ class SeaMine(pygame.sprite.Sprite):
             self.explosion = Explosion(self.rect.centerx, self.rect.centery)
             explosion_group.add(self.explosion)
             self.kill()
-
 
 
 def draw_t(turtle_obj):
@@ -589,12 +595,21 @@ def main():
             mine_group.update()
             mine_group.draw(WIN)
 
+            # Keep track of mines to be removed
+            mines_to_remove = []
+
             # Iterate over the mines to check for collision with the player
             if moving_obj is not None:
                 for mine in mine_group:
                     mine.collide(moving_obj.rect, explosion_group)
-                    if mine.explosion and not mine.explosion.alive():
-                        lose_window()
+                    if mine.explosion and mine.explosion.is_finished():
+                        mines_to_remove.append(mine)
+
+            # Remove mines with finished explosions
+            for mine in mines_to_remove:
+                mine_group.remove(mine)
+                if not any(mine_group):  # Check if all mines are removed
+                    lose_window()
 
             # Spawn a new mine every 12 seconds
             current_time = time.time()
