@@ -595,25 +595,14 @@ def main():
             mine_group.update()
             mine_group.draw(WIN)
 
-            # Keep track of mines to be removed
-            mines_to_remove = []
-
             # Iterate over the mines to check for collision with the player
             if moving_obj is not None:
                 for mine in mine_group:
                     mine.collide(moving_obj.rect, explosion_group)
-                    if mine.explosion and mine.explosion.is_finished():
-                        mines_to_remove.append(mine)
 
-            # Remove mines with finished explosions
-            for mine in mines_to_remove:
-                mine_group.remove(mine)
-                if not any(mine_group):  # Check if all mines are removed
-                    lose_window()
-
-            # Spawn a new mine every 12 seconds
+            # Spawn a new mine every 8 seconds
             current_time = time.time()
-            if current_time - mine_spawn_timer >= 10:
+            if current_time - mine_spawn_timer >= 8:
                 new_mine = SeaMine(WIDTH, HEIGHT, "images/image.png")
                 mine_group.add(new_mine)
                 mine_spawn_timer = current_time
