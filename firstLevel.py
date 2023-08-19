@@ -33,6 +33,7 @@ FONT = pygame.font.SysFont("open sans", 111, True, True)
 gui_font = pygame.font.Font(None, 30)
 # variables for tracking the number of objects on the WIN
 lvl = 1
+trash_spawn = 15
 trash_iterator = 5
 locations = []
 correct_sfx = pygame.mixer.Sound('sound/correct-6033.mp3')
@@ -170,6 +171,14 @@ class TrashObj:
         return self.img_path
 
 
+def check_and_append(x, y, vel):
+    while (x, y) in locations or (x, y) in [loc for loc in locations if isinstance(loc, tuple)]:
+        x = random.randint(vel, WIDTH - vel)
+        y = random.randint(vel, HEIGHT - vel)
+    locations.append((x, y))
+    return (x, y)
+
+
 class TurtleObj:
     def __init__(self, img_path):
         # Take image as input
@@ -178,7 +187,7 @@ class TurtleObj:
         self.images = [pygame.image.load(path) for path in self.img_path]
         self.img = self.images[self.i]
         self.vel = 100 
-        self.speed = 2
+        self.speed = 1
         self.direction = 1
         self.rect = self.img.get_rect()
         x = random.randint(self.vel, WIDTH - self.vel)
@@ -228,8 +237,8 @@ class SeaMine(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
 
         self.image = pygame.image.load(mine_image_path)
-        self.rect = self.image.get_rect()
         self.vel = 120
+        self.rect = self.image.get_rect()
 
         # Determine the initial side of appearance (0: top, 1: right, 2: bottom, 3: left)
         self.side = random.choice([0, 1, 2, 3])
@@ -265,7 +274,6 @@ class SeaMine(pygame.sprite.Sprite):
             self.explosion = Explosion(self.rect.centerx, self.rect.centery)
             explosion_group.add(self.explosion)
             self.kill()
-            lose_window()
 
 
 
@@ -479,13 +487,6 @@ def check_collision(moving_obj):
             TRASHOBJ.remove(trash_obj)
             correct_sfx.play()
 
-def check_and_append(x, y, vel):
-    while (x, y) in locations or (x, y) in [loc for loc in locations if isinstance(loc, tuple)]:
-        x = random.randint(vel, WIDTH - vel)
-        y = random.randint(vel, HEIGHT - vel)
-    locations.append((x, y))
-    return (x, y)
-
 metal_t = draw_turtle(['images/GrayT.png', 'images/MetalTM.png'])
 organic_t = draw_turtle(['images/BrownT.png', 'images/OrganicTM.png'])
 glass_t = draw_turtle(['images/PurpleT.png', 'images/GlassTM.png'])
@@ -494,7 +495,7 @@ plastic_t = draw_turtle(['images/YellowT.png', 'images/PlasticTM.png'])
 TURTLEOBJ = [metal_t, organic_t, glass_t, paper_t, plastic_t]
 
 def main():
-    global moving_obj, lvl, trash_iterator
+    global moving_obj, lvl, trash_iterator, trash_spawn
 
     for i in range(trash_iterator):
         for img in range(0, lvl+1):
@@ -513,13 +514,14 @@ def main():
     spawn_time = spawn_time1 = start_time
     mine_spawn_timer = 0  # Initialize the mine spawn timer
 
+
     # main loop
     while run:
         elapsed_time = time.time() - start_time
         # Spawn new images every 15 seconds
         current_time = current_time1 = time.time()
 
-        if current_time - spawn_time > 15:
+        if current_time - spawn_time > trash_spawn:
             # Iterate over the trash images to draw them and check for collision
             for img in range(0, lvl+1):
                 img_obj = draw_garbage(TRASH[img])
@@ -538,6 +540,9 @@ def main():
             else:
                 lvl += 1
                 trash_iterator -= 1
+                trash_spawn -= 1
+                for i in TURTLEOBJ:
+                    i.speed += 1
                 draw_rules(RULES[lvl-1])
                 main()
 
@@ -574,26 +579,29 @@ def main():
                 spawn_time1 = current_time1
             TURTLEOBJ[t].move()
         draw(img_obj, elapsed_time)
-        
-        # Update and draw explosions
-        explosion_group.update()
-        explosion_group.draw(WIN)
 
-        # Update and draw mines
-        mine_group.update()
-        mine_group.draw(WIN)
+        if lvl >= 4:
+            # Update and draw explosions
+            explosion_group.update()
+            explosion_group.draw(WIN)
 
-        # Iterate over the mines to check for collision with the player
-        if moving_obj is not None:
-            for mine in mine_group:
-                mine.collide(moving_obj.rect, explosion_group)
+            # Update and draw mines
+            mine_group.update()
+            mine_group.draw(WIN)
 
-        # Spawn a new mine every 5 seconds
-        current_time = time.time()
-        if current_time - mine_spawn_timer > 5:
-            new_mine = SeaMine(WIDTH, HEIGHT, "images/image.png")
-            mine_group.add(new_mine)
-            mine_spawn_timer = current_time
+            # Iterate over the mines to check for collision with the player
+            if moving_obj is not None:
+                for mine in mine_group:
+                    mine.collide(moving_obj.rect, explosion_group)
+                    if mine.explosion and not mine.explosion.alive():
+                        lose_window()
+
+            # Spawn a new mine every 12 seconds
+            current_time = time.time()
+            if current_time - mine_spawn_timer >= 10:
+                new_mine = SeaMine(WIDTH, HEIGHT, "images/image.png")
+                mine_group.add(new_mine)
+                mine_spawn_timer = current_time
 
         pygame.display.update()  # Update the GUI pygame
         clock.tick(FPS)  # set FPS
