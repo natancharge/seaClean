@@ -1,4 +1,3 @@
-import asyncio
 import cv2
 import pygame
 import random
@@ -451,7 +450,7 @@ def draw_turtle(img):
     return TurtleObj(img)
 
 
-def draw(img_obj, elapsed_time):
+def draw(elapsed_time):
     # Draw the trash images, and update the WIN
     for img_obj in TRASHOBJ:
         WIN.blit(img_obj.bordered_surface, img_obj.rect)
@@ -521,7 +520,6 @@ def main():
     spawn_time = spawn_time1 = start_time
     mine_spawn_timer = 0  # Initialize the mine spawn timer
 
-
     # main loop
     while run:
         elapsed_time = time.time() - start_time
@@ -585,7 +583,7 @@ def main():
                     TURTLEOBJ[j].update_img()
                 spawn_time1 = current_time1
             TURTLEOBJ[t].move()
-        draw(img_obj, elapsed_time)
+        draw(elapsed_time)
 
         if lvl >= 4:
             # Update and draw explosions
