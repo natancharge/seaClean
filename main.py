@@ -39,7 +39,6 @@ locations = []
 correct_sfx = pygame.mixer.Sound('sound/correct-6033.mp3')
 correct_sfx.set_volume(0.1)
 
-
 def play_music():
     pygame.mixer.music.load('sound/scott-buckley-jul.mp3')
 
@@ -286,7 +285,6 @@ class SeaMine(pygame.sprite.Sprite):
 def draw_t(turtle_obj):
     WIN.blit(turtle_obj.bordered_surface, turtle_obj.rect)
 
-
 def lose_window():
     cap = cv2.VideoCapture('vids/game over.mov')  # שם של קובץ
 
@@ -326,7 +324,6 @@ def lose_window():
         pygame.quit()
         # code to quit the program
 
-
 def winning_window():
     cap = cv2.VideoCapture('vids/win.mov')  # שם של קובץ
 
@@ -355,7 +352,6 @@ def winning_window():
     cap.release()
     cv2.destroyAllWindows()
 
-
 def opening():
     cap = cv2.VideoCapture('vids/SEE CLEAN (3).mp4')  # שם של קובץ
     while cap.isOpened():
@@ -381,7 +377,6 @@ def opening():
 
     cap.release()
     cv2.destroyAllWindows()
-
 
 def backstory_introduction():
     DR_voice = pygame.mixer.Sound('sound/Introduction.mp3')
@@ -419,7 +414,6 @@ def backstory_introduction():
     cap.release()
     cv2.destroyAllWindows()
 
-
 def welcome_window():
     startmenu = pygame.image.load('images/start (2).png')
     startmenu = pygame.transform.scale(startmenu, (WIDTH, HEIGHT))
@@ -441,14 +435,11 @@ def welcome_window():
     # start the main game
     main()
 
-
 def draw_garbage(img):
     return TrashObj(img)
 
-
 def draw_turtle(img):
     return TurtleObj(img)
-
 
 def draw(elapsed_time):
     # Draw the trash images, and update the WIN
@@ -471,7 +462,6 @@ def draw_rules(path):
         continue_btn.draw(WIN)
         run = continue_btn.check_click(run)
         pygame.display.update()  # Update the GUI pygame
-
 
 def check_collision(moving_obj):
     global TRASHOBJ
@@ -610,7 +600,6 @@ def main():
         clock.tick(FPS)  # set FPS
 
     pygame.quit()  # ends the game
-
 
 if __name__ == '__main__':
     play_music()
