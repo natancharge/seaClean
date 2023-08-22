@@ -401,7 +401,7 @@ def backstory_introduction():
             frame = pygame.surfarray.make_surface(frame)
             WIN.blit(frame, (WIDTH / 2 - frame.get_width() / 2, HEIGHT / 2 - frame.get_height() / 2))
             skip_btn.draw(WIN)
-            run = skip_btn.check_click(run)
+            run = skip_btn.check_click()
             pygame.display.update()
 
             for event in pygame.event.get():
@@ -477,7 +477,7 @@ def draw_rules(path):
                 quit()
         WIN.blit(img, (0, 0))
         continue_btn.draw(WIN)
-        run = continue_btn.check_click(run)
+        run = continue_btn.check_click()
         pygame.display.update()  # Update the GUI pygame
 
 def check_collision(moving_obj):
@@ -619,8 +619,8 @@ def main():
     pygame.quit()  # ends the game
 
 if __name__ == '__main__':
-    # play_music()
-    # opening()
-    # backstory_introduction()
-    # draw_rules(RULES[0])
+    play_music()
+    opening()
+    backstory_introduction()
+    draw_rules(RULES[0])
     welcome_window()
