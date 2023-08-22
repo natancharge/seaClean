@@ -31,6 +31,7 @@ moving_obj = None
 FPS = 60
 FONT = pygame.font.SysFont("open sans", 111, True, True)
 gui_font = pygame.font.Font(None, 30)
+hebrew = False
 # variables for tracking the number of objects on the WIN
 lvl = 1
 trash_spawn = 15
@@ -81,12 +82,15 @@ class Explosion(pygame.sprite.Sprite):
 
 
 class Button:
-    def __init__(self, text, width, height, pos, elevation, gui_font=gui_font):
+    def __init__(self, text, width, height, pos, elevation, gui_font=gui_font, font_size=None):
         # Core attributes
         self.pressed = False
         self.elevation = elevation
         self.dynamic_elevation = elevation
         self.original_y_pos = pos[1]
+
+        if font_size is not None:
+            gui_font = pygame.font.SysFont('open sans', font_size, True, True)
 
         # Define the top rectangle for the button
         self.top_rect = pygame.Rect(pos, (width, height))
@@ -117,7 +121,7 @@ class Button:
         self.bottom_rect.midtop = self.top_rect.midtop
         self.bottom_rect.height = self.top_rect.height + self.dynamic_elevation
 
-    def check_click(self, var):
+    def check_click(self):
         # Check if the mouse is over the button
         mouse_pos = pygame.mouse.get_pos()
 
@@ -415,23 +419,36 @@ def backstory_introduction():
     cv2.destroyAllWindows()
 
 def welcome_window():
-    startmenu = pygame.image.load('images/start (2).png')
+    startmenu = pygame.image.load('images/start (2).png').convert_alpha()
     startmenu = pygame.transform.scale(startmenu, (WIDTH, HEIGHT))
 
+
     start_btn = Button('START', 270 ,70, (WIDTH / 2 - 135, HEIGHT / 2 + HEIGHT / 3), 10, FONT)
+    quit_btn = Button('QUIT', 270, 70, (WIDTH / 2 - 135, HEIGHT / 2), 10, FONT)
+    language_btn = Button('Language', 270, 70, (WIDTH / 2 - 135, HEIGHT / 8), 10, FONT, 77)
 
     run = True
     while run:
+        startmenu.set_alpha(255)
         pygame.time.delay(10)
         WIN.blit(startmenu, (0, 0))
         # draw button
         start_btn.draw(WIN)
+        quit_btn.draw(WIN)
+        language_btn.draw(WIN)
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-        run = start_btn.check_click(run)
+        if start_btn.check_click() == False:
+            run = False
+        elif quit_btn.check_click() == False:
+            pygame.quit()
+        elif language_btn.check_click() == False:
+            msg = messagebox.askquestion("Language", "Would you like to change your language?\nתרצה לשנות את שפת המשחק לעברית?")
+            if msg == "yes":
+                hebrew = True
     # start the main game
     main()
 
@@ -602,8 +619,8 @@ def main():
     pygame.quit()  # ends the game
 
 if __name__ == '__main__':
-    play_music()
-    opening()
-    backstory_introduction()
-    draw_rules(RULES[0])
+    # play_music()
+    # opening()
+    # backstory_introduction()
+    # draw_rules(RULES[0])
     welcome_window()
