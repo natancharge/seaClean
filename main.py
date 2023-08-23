@@ -386,8 +386,13 @@ def backstory_introduction():
     DR_voice = pygame.mixer.Sound('sound/Introduction.mp3')
     DR_voice.set_volume(0.8)
 
-    cap = cv2.VideoCapture('vids/Backstory.mp4')
+    if hebrew:
+            cap = cv2.VideoCapture('vids/Backstory_hebrew.mp4')
+    else:
+        cap = cv2.VideoCapture('vids/Backstory.mp4')
+    
     skip_btn = Button('Skip', 135, 35, (WIDTH - 200, HEIGHT - 50), 5)
+        
     run = cap.isOpened()
     while run:
         DR_voice.play()
@@ -419,6 +424,8 @@ def backstory_introduction():
     cv2.destroyAllWindows()
 
 def welcome_window():
+    global hebrew
+
     startmenu = pygame.image.load('images/start (2).png').convert_alpha()
     startmenu = pygame.transform.scale(startmenu, (WIDTH, HEIGHT))
 
