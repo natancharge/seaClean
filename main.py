@@ -25,6 +25,12 @@ RULES = [
     "images/Paper introduction.png",
     "images/Plastic introduction.png"
 ]
+RULES_HEBREW = [
+    "images/Gameplay_explaining_hebrew.png",
+    "images/Glass introduction_hebrew.png",
+    "images/Paper introduction_hebrew.png",
+    "images/Plastic introduction_hebrew.png"
+]
 TRASHOBJ, TURTLEOBJ = [], []
 # Set a variable to store the current movable image object
 moving_obj = None
@@ -472,8 +478,11 @@ def draw(elapsed_time):
     time_text = FONT.render(f"Time: {round(100 - elapsed_time)}s", 1, "white")
     WIN.blit(time_text, (10, 10))
 
-def draw_rules(path):
-    img = pygame.transform.scale(pygame.image.load(path), (WIDTH, HEIGHT))
+def draw_rules():
+    if hebrew:
+        img = pygame.transform.scale(pygame.image.load(RULES_HEBREW[lvl-1]), (WIDTH, HEIGHT))
+    else:
+        img = pygame.transform.scale(pygame.image.load(RULES[lvl-1]), (WIDTH, HEIGHT))
     continue_btn = Button('Continue', 135, 35, (WIDTH - 200, HEIGHT - 50), 5)
     run = True
     while run:
@@ -562,7 +571,7 @@ def main():
                 trash_spawn -= 1
                 for i in TURTLEOBJ:
                     i.speed += 1
-                draw_rules(RULES[lvl-1])
+                draw_rules()
                 main()
 
         # Check for collision between turtle and trash objects
@@ -630,5 +639,5 @@ if __name__ == '__main__':
     opening()
     welcome_window()
     backstory_introduction()
-    draw_rules(RULES[0])
+    draw_rules()
     main()
