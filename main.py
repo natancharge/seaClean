@@ -401,6 +401,8 @@ def backstory_introduction():
         
     run = cap.isOpened()
     while run:
+        WIN.fill((0, 0, 0))
+
         DR_voice.play()
         ret, frame = cap.read()
 
@@ -428,6 +430,7 @@ def backstory_introduction():
     DR_voice.stop()
     cap.release()
     cv2.destroyAllWindows()
+
 
 def welcome_window():
     global hebrew
@@ -638,6 +641,5 @@ if __name__ == '__main__':
     play_music()
     opening()
     welcome_window()
-    backstory_introduction()
     draw_rules()
     main()
