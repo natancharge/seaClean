@@ -450,7 +450,7 @@ def welcome_window():
             if msg == "yes":
                 hebrew = True
     # start the main game
-    main()
+    backstory_introduction()
 
 def draw_garbage(img):
     return TrashObj(img)
@@ -621,6 +621,7 @@ def main():
 if __name__ == '__main__':
     play_music()
     opening()
+    welcome_window()
     backstory_introduction()
     draw_rules(RULES[0])
-    welcome_window()
+    main()
