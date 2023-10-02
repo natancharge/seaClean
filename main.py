@@ -389,8 +389,8 @@ def opening():
     cv2.destroyAllWindows()
 
 def backstory_introduction():
-    DR_voice = pygame.mixer.Sound('sound/Introduction.mp3')
-    DR_voice.set_volume(0.8)
+    # DR_voice = pygame.mixer.Sound('sound/Introduction.mp3') #TODO: Rerecord the sound
+    # DR_voice.set_volume(0.8)
 
     if hebrew:
             cap = cv2.VideoCapture('vids/Backstory_hebrew.mp4')
@@ -403,7 +403,7 @@ def backstory_introduction():
     while run:
         WIN.fill((0, 0, 0))
 
-        DR_voice.play()
+        # DR_voice.play()
         ret, frame = cap.read()
 
         frame = cv2.flip(frame, 0)
@@ -421,13 +421,13 @@ def backstory_introduction():
                 if event.type == pygame.QUIT:  # Check for the quit event
                     cap.release()
                     cv2.destroyAllWindows()
-                    DR_voice.stop()
+                    # DR_voice.stop()
                     pygame.quit()
                     return  # Exit the function and close the window
         else:
             break
 
-    DR_voice.stop()
+    # DR_voice.stop()
     cap.release()
     cv2.destroyAllWindows()
 
